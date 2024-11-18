@@ -1,8 +1,15 @@
 #include "Game.h"
 
 Game::Game()
-    : window(sf::VideoMode(800, 600), "Graph Demo"), drawLine(false), snappingMode(false), selectedNode(nullptr) {
+    : window(sf::VideoMode(1200, 780), "Graph Demo"), drawLine(false), snappingMode(false), selectedNode(nullptr) {
     window.setFramerateLimit(60);
+    if (!font.loadFromFile("TimesNewRoman.ttf")) {
+        std::cout << "Font not loaded\n";
+    }
+    createButton(1200 - 150, 10, buttonDfs, textDfs,
+        "DFS");
+    createButton(1200 - 150, 60, buttonBfs,
+        textBfs, "BFS");
 }
 
 void Game::run() {
@@ -19,13 +26,56 @@ void Game::processEvents() {
         if (event.type == sf::Event::Closed)
             window.close();
 
+        if (event.type == sf::Event::MouseWheelScrolled) {
+            float zoomFactor = 1.1f; // Adjust zoom sensitivity
+            if (event.mouseWheelScroll.delta > 0) {
+                // Zoom in
+                view.zoom(1.0f / zoomFactor);
+            }
+            else if (event.mouseWheelScroll.delta < 0) {
+                // Zoom out
+                view.zoom(zoomFactor);
+            }
+
+            // Get the mouse position in pixel coordinates
+            sf::Vector2i pixelMousePosition = sf::Mouse::getPosition(window);
+
+            // Convert the mouse position to world coordinates
+            sf::Vector2f beforeZoomMouseWorldPosition = window.mapPixelToCoords(pixelMousePosition);
+
+            // Adjust the view's center to keep the mouse position consistent
+            sf::Vector2f afterZoomMouseWorldPosition = window.mapPixelToCoords(pixelMousePosition);
+            sf::Vector2f offset = beforeZoomMouseWorldPosition - afterZoomMouseWorldPosition;
+
+            view.move(offset);
+        }
+
         handleKeyPress(event);  // Check for key press to add a new circle
+
+        if (buttonDfs.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                selectDFS = true;
+            }
+        }
+
+        if (buttonBfs.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                selectBFS = true;
+            }
+        }
+
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
             for (int i = 0; i < circles.size(); i++) {
                 if (circles[i]->getBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) { 
                     std::vector<makeCircle*> visitedNodes;
-                    doDFS(circles[i].get(), visitedNodes); 
+                    if (selectDFS) {
+                        doDFS(circles[i].get(), visitedNodes);
+                    }
+                    else if (selectBFS) {
+                        doBFS(circles[i].get(), visitedNodes);
+                    }
+                    
                 }
             }
         }
@@ -49,6 +99,7 @@ void Game::update() {
     if (snappingMode) {
         processSnappingMode();
     }
+    
 }
 
 void Game::processSnappingMode() {
@@ -88,6 +139,7 @@ void Game::selectNearestCircleAndConnect() {
 }
 
 void Game::render() {
+    window.setView(view); 
     window.clear();
 
     // Draw each circle and connections
@@ -97,15 +149,21 @@ void Game::render() {
     }
     if (stop) {
         for (auto& node : circles) {
-            if (node->highlighted) {
-                node->setcolor(sf::Color::Yellow);
-            }
-            else {
-                node->setcolor(sf::Color(255, 255, 0, 80)); 
-            }
+                if (node->highlighted) {
+                    sf::sleep(sf::milliseconds(10));
+                    node->setcolor(sf::Color::Yellow);
+                }
+                else {
+                    node->setcolor(sf::Color(255, 255, 0, 80));
+                }
         }
+
     }
     drawConnections(window);  // Draw connections between circles
+    window.draw(buttonDfs); 
+    window.draw(buttonBfs); 
+    window.draw(textDfs); 
+    window.draw(textBfs); 
 
     window.display();
 }
@@ -147,6 +205,7 @@ void Game::drawConnections(sf::RenderWindow& window) {
 
                 sf::RectangleShape rectangle(sf::Vector2f(distance, RECTANGLE_THICKNESS));
                 if (node->highlighted && connectedNode->highlighted) {
+                    sf::sleep(sf::milliseconds(10));
                     rectangle.setFillColor(sf::Color::Green); 
                 }
                 else {
@@ -175,15 +234,60 @@ void Game:: doDFS(makeCircle* node, std::vector<makeCircle*>& visitedNode) {
     }
     node->highlighted = true; 
     visitedNode.push_back(node);
-    
+
     // visit all the node recursively 
     for (auto& neighbour : node->connections) {
         if (std::find(visitedNode.begin(), visitedNode.end(), neighbour) == visitedNode.end()) {
             doDFS(neighbour, visitedNode);
         }
+        //sf::sleep(sf::milliseconds(200)); 
         stop = true;
     }
 }
 
+void Game::doBFS(makeCircle* startNode, std::vector<makeCircle*>& visitedNodes) {
+    if (startNode == nullptr || stop) {
+        return;
+    }
+
+    // Queue for BFS
+    std::queue<makeCircle*> queue;
+
+    // Mark the start node as visited and enqueue it
+    startNode->highlighted = true;
+    visitedNodes.push_back(startNode);
+    queue.push(startNode);
+
+    while (!queue.empty() && !stop) {
+        // Dequeue a node from the queue
+        makeCircle* currentNode = queue.front();
+        queue.pop();
+
+        // Visit all the neighbors of the current node
+        for (auto& neighbor : currentNode->connections) {
+            // If the neighbor hasn't been visited
+            if (std::find(visitedNodes.begin(), visitedNodes.end(), neighbor) == visitedNodes.end()) {
+                neighbor->highlighted = true;          // Mark as visited (for visualization)
+                visitedNodes.push_back(neighbor);     // Add to visited list
+                queue.push(neighbor);                 // Enqueue for further traversal
+            }
+        }
+    }
+}
+
+
+void Game::createButton(int x, int y, sf::RectangleShape& button, sf::Text& text, const std::string& title) {
+    button = sf::RectangleShape(sf::Vector2f(100, 30)); 
+    button.setPosition(x, y); 
+    button.setOutlineColor(sf::Color::White); 
+    button.setOutlineThickness(3.f); 
+    button.setFillColor(sf::Color::Transparent); 
+
+    text.setFont(font); 
+    text.setString(title); 
+    text.setCharacterSize(15); 
+    text.setFillColor(sf::Color::White);
+    text.setPosition(button.getPosition().x + 5, button.getPosition().y + 5); 
+}
 
 
