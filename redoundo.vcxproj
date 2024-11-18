@@ -133,21 +133,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Edge.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GraphApp.cpp" />
     <ClCompile Include="makeCircle.cpp" />
-    <ClCompile Include="makeSquare.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Edge.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GraphApp.h" />
     <ClInclude Include="makeCircle.h" />
-    <ClInclude Include="makeSquare.h" />
-    <ClInclude Include="Node.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

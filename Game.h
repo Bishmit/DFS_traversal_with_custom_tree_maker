@@ -44,7 +44,7 @@ private:
 
     // Connection rendering
     void drawConnections(sf::RenderWindow& window);
-    bool stop; 
+    bool stop = false; 
     // Helper function
     bool isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
     void doDFS(makeCircle* node, std::vector<makeCircle*>& visitedNode);
