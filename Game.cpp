@@ -1,16 +1,16 @@
 #include "Game.h"
 
 Game::Game()
-    : window(sf::VideoMode(1200, 780), "Graph Traversal",
+    : window(sf::VideoMode(1300, 775), "Graph Traversal",
       sf::Style::Titlebar | sf::Style::Close), drawLine(false), snappingMode(false), selectedNode(nullptr) {
     window.setFramerateLimit(60);
     if (!font.loadFromFile("TimesNewRoman.ttf")) {
         std::cout << "Font not loaded\n";
     }
-    createButton(1200 - 150, 10, buttonDfs, textDfs, "DFS");
-    createButton(1200 - 150, 60, buttonBfs, textBfs, "BFS");
-    createButton(1200 - 150, 110, buttonClearTraversal, textClearTraversal, "Reset Traversal");
-    createButton(1200 - 150, 160, buttonClearAll, textClearAll, "Clear All");
+    createButton(1300 - 150, 10, buttonDfs, textDfs, "DFS");
+    createButton(1300 - 150, 60, buttonBfs, textBfs, "BFS");
+    createButton(1300 - 150, 110, buttonClearTraversal, textClearTraversal, "Reset Traversal");
+    createButton(1300 - 150, 160, buttonClearAll, textClearAll, "Clear All");
 }
 
 void Game::run() {
@@ -94,7 +94,7 @@ void Game::processEvents() {
                 if (circles[i]->getBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) { 
                     std::vector<makeCircle*> visitedNodes;
                     if (selectDFS) {
-                        doDFS(circles[i].get(), visitedNodes);
+                        doDFS(circles[i].get(), circles[0].get(), visitedNodes);
 
                     }
                     else if (selectBFS) {
@@ -172,7 +172,7 @@ void Game::render() {
         for (auto& node : circles) {
                 if (node->highlighted) {
                     sf::sleep(sf::milliseconds(10));
-                    node->setcolor(sf::Color::Yellow);
+                    node->setcolor(sf::Color(255, 255, 0, 255));
                 }
                 else {
                     node->setcolor(sf::Color(255, 255, 0, 80));
@@ -258,20 +258,23 @@ bool Game::isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
     return std::hypot(pos1.x - pos2.x, pos1.y - pos2.y) < SNAP_THRESHOLD;
 }
 
-void Game:: doDFS(makeCircle* node, std::vector<makeCircle*>& visitedNode) {
-    if (node == nullptr || stop ) {
+void Game:: doDFS(makeCircle* startnode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNode) {
+    if (startnode == nullptr || parentNode == nullptr || stop ) {
         return;
     }
-    node->highlighted = true; 
-    visitedNode.push_back(node);
+    parentNode->highlighted = true; 
+    visitedNode.push_back(parentNode);
+
+    if (parentNode == startnode) {
+        stop = true;
+        return;
+    }
 
     // visit all the node recursively 
-    for (auto& neighbour : node->connections) {
+    for (auto& neighbour : parentNode->connections) {
         if (std::find(visitedNode.begin(), visitedNode.end(), neighbour) == visitedNode.end()) {
-            doDFS(neighbour, visitedNode);
+            doDFS(startnode, neighbour, visitedNode);
         }
-        //sf::sleep(sf::milliseconds(200)); 
-        stop = true;
     }
 }
 
@@ -303,7 +306,10 @@ void Game::doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<make
                 neighbor->highlighted = true;          // Mark as visited (for visualization)
                 visitedNodes.push_back(neighbor);     // Add to visited list
                 queue.push(neighbor);                 // Enqueue for further traversal
-                if (neighbor == startNode) stop = true; 
+                if (neighbor == startNode) {
+                    stop = true;
+                    break;
+                }
             } 
         }
     }

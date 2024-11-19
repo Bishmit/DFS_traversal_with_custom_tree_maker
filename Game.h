@@ -57,7 +57,7 @@ private:
     bool shouldRenderSquare = false;
     // Helper function
     bool isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
-    void doDFS(makeCircle* node, std::vector<makeCircle*>& visitedNode);
+    void doDFS(makeCircle* node, makeCircle* parentNode, std::vector<makeCircle*>& visitedNode);
     void doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNodes);
     void createButton(int x, int y, sf::RectangleShape& button, sf::Text& text, const std::string& title);
     void clearTraversal();
