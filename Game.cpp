@@ -166,11 +166,6 @@ void Game::render() {
     window.setView(view); 
     window.clear();
 
-    // Draw each circle and connections
-    
-    for (const auto& circle : circles) {
-        circle->render(window);
-    }
     if (stop) {
         for (auto& node : circles) {
                 if (node->highlighted) {
@@ -184,6 +179,11 @@ void Game::render() {
 
     }
     drawConnections(window);  // Draw connections between circles
+
+    // Draw each circle and connections
+    for (const auto& circle : circles) {
+        circle->render(window);
+    }
     window.draw(buttonDfs); 
     window.draw(buttonBfs); 
     window.draw(textDfs); 
@@ -204,7 +204,7 @@ void Game::handleKeyPress(sf::Event& event) {
 
 void Game::addNewCircle() {
     sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-    circles.emplace_back(std::make_unique<makeCircle>(10.f, mousePosition.x, mousePosition.y));
+    circles.emplace_back(std::make_unique<makeCircle>(8.f, mousePosition.x, mousePosition.y));
 }
 
 void Game::connectNodes(makeCircle* node1, makeCircle* node2) {
@@ -215,15 +215,15 @@ void Game::connectNodes(makeCircle* node1, makeCircle* node2) {
 }
 
 void Game::drawConnections(sf::RenderWindow& window) {
-    constexpr float RECTANGLE_THICKNESS = 3.0f;
+    constexpr float RECTANGLE_THICKNESS = 2.0f;
     constexpr float DEG_TO_RAD = 180.f / 3.14159f;
 
     for (const auto& node : circles) {
-        const sf::Vector2f& pos1 = node->getPos();
+        const sf::Vector2f& pos1 = sf::Vector2f(node->getPos().x + 4, node->getPos().y + 4); 
 
         // Draw each unique connection
         for (const auto& connectedNode : node->connections) {
-            const sf::Vector2f& pos2 = connectedNode->getPos();
+            const sf::Vector2f& pos2 = sf::Vector2f(connectedNode->getPos().x + 4, connectedNode->getPos().y + 4);
 
             // Avoid drawing duplicate connections
             if (pos1.x < pos2.x || (pos1.x == pos2.x && pos1.y < pos2.y)) {
