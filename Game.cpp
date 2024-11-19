@@ -57,6 +57,7 @@ void Game::processEvents() {
             buttonDfs.setOutlineColor(sf::Color::Green); 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 selectDFS = true;
+                selectBFS = false; 
             }
         }
         else buttonDfs.setOutlineColor(sf::Color::White);
@@ -66,6 +67,7 @@ void Game::processEvents() {
             buttonBfs.setOutlineColor(sf::Color::Green);
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 selectBFS = true;
+                selectDFS = false; 
             }
         }
         else buttonBfs.setOutlineColor(sf::Color::White);
