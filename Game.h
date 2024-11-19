@@ -17,8 +17,8 @@ private:
     bool drawLine;
     bool snappingMode;
     sf::Font font; 
-    sf::RectangleShape buttonDfs, buttonBfs; 
-    sf::Text textDfs, textBfs; 
+    sf::RectangleShape buttonDfs, buttonBfs, buttonClearTraversal, buttonClearAll; 
+    sf::Text textDfs, textBfs, textClearTraversal, textClearAll; 
     sf::View view = window.getDefaultView();
 
     // Mouse and selection states
@@ -28,7 +28,7 @@ private:
 
     // Circles (nodes) in the game
     std::vector<std::unique_ptr<makeCircle>> circles;
-    //std::vector<makeCircle*> visitedNodes;
+    std::vector<makeCircle*> visitedNodes;
 
     // Core methods for game loop
     void processEvents();
@@ -58,6 +58,9 @@ private:
     // Helper function
     bool isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
     void doDFS(makeCircle* node, std::vector<makeCircle*>& visitedNode);
-    void doBFS(makeCircle* startNode, std::vector<makeCircle*>& visitedNodes);
+    void doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNodes);
     void createButton(int x, int y, sf::RectangleShape& button, sf::Text& text, const std::string& title);
+    void clearTraversal();
+    void clearGraph();
+    void renderPathInReverseOrder(const std::vector<makeCircle*>& path);
 };

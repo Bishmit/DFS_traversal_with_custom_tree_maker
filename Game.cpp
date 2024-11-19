@@ -1,15 +1,16 @@
 #include "Game.h"
 
 Game::Game()
-    : window(sf::VideoMode(1200, 780), "Graph Demo"), drawLine(false), snappingMode(false), selectedNode(nullptr) {
+    : window(sf::VideoMode(1200, 780), "Graph Traversal",
+      sf::Style::Titlebar | sf::Style::Close), drawLine(false), snappingMode(false), selectedNode(nullptr) {
     window.setFramerateLimit(60);
     if (!font.loadFromFile("TimesNewRoman.ttf")) {
         std::cout << "Font not loaded\n";
     }
-    createButton(1200 - 150, 10, buttonDfs, textDfs,
-        "DFS");
-    createButton(1200 - 150, 60, buttonBfs,
-        textBfs, "BFS");
+    createButton(1200 - 150, 10, buttonDfs, textDfs, "DFS");
+    createButton(1200 - 150, 60, buttonBfs, textBfs, "BFS");
+    createButton(1200 - 150, 110, buttonClearTraversal, textClearTraversal, "Reset Traversal");
+    createButton(1200 - 150, 160, buttonClearAll, textClearAll, "Clear All");
 }
 
 void Game::run() {
@@ -53,16 +54,37 @@ void Game::processEvents() {
         handleKeyPress(event);  // Check for key press to add a new circle
 
         if (buttonDfs.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+            buttonDfs.setOutlineColor(sf::Color::Green); 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 selectDFS = true;
             }
         }
+        else buttonDfs.setOutlineColor(sf::Color::White);
+
 
         if (buttonBfs.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+            buttonBfs.setOutlineColor(sf::Color::Green);
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 selectBFS = true;
             }
         }
+        else buttonBfs.setOutlineColor(sf::Color::White);
+
+        if (buttonClearTraversal.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+            buttonClearTraversal.setOutlineColor(sf::Color::Green);
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                clearTraversal();
+            }
+        }
+        else buttonClearTraversal.setOutlineColor(sf::Color::White);
+
+        if (buttonClearAll.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+            buttonClearAll.setOutlineColor(sf::Color::Red); 
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+                clearGraph();
+            }
+        }
+        else buttonClearAll.setOutlineColor(sf::Color::White);
 
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -71,9 +93,11 @@ void Game::processEvents() {
                     std::vector<makeCircle*> visitedNodes;
                     if (selectDFS) {
                         doDFS(circles[i].get(), visitedNodes);
+
                     }
                     else if (selectBFS) {
-                        doBFS(circles[i].get(), visitedNodes);
+                        
+                        doBFS(circles[i].get(), circles[0].get(), visitedNodes);
                     }
                     
                 }
@@ -164,6 +188,10 @@ void Game::render() {
     window.draw(buttonBfs); 
     window.draw(textDfs); 
     window.draw(textBfs); 
+    window.draw(buttonClearTraversal);
+    window.draw(buttonClearAll);
+    window.draw(textClearTraversal);
+    window.draw(textClearAll);
 
     window.display();
 }
@@ -245,7 +273,7 @@ void Game:: doDFS(makeCircle* node, std::vector<makeCircle*>& visitedNode) {
     }
 }
 
-void Game::doBFS(makeCircle* startNode, std::vector<makeCircle*>& visitedNodes) {
+void Game::doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNodes) {
     if (startNode == nullptr || stop) {
         return;
     }
@@ -254,30 +282,34 @@ void Game::doBFS(makeCircle* startNode, std::vector<makeCircle*>& visitedNodes) 
     std::queue<makeCircle*> queue;
 
     // Mark the start node as visited and enqueue it
-    startNode->highlighted = true;
-    visitedNodes.push_back(startNode);
-    queue.push(startNode);
+    parentNode->highlighted = true;
+    visitedNodes.push_back(parentNode);
+    queue.push(parentNode);
 
     while (!queue.empty() && !stop) {
         // Dequeue a node from the queue
         makeCircle* currentNode = queue.front();
+        //makeCircle* targetNode = queue.back();
         queue.pop();
-
+        
+        //if (currentNode == parentNode) break; 
         // Visit all the neighbors of the current node
+        
         for (auto& neighbor : currentNode->connections) {
             // If the neighbor hasn't been visited
             if (std::find(visitedNodes.begin(), visitedNodes.end(), neighbor) == visitedNodes.end()) {
                 neighbor->highlighted = true;          // Mark as visited (for visualization)
                 visitedNodes.push_back(neighbor);     // Add to visited list
                 queue.push(neighbor);                 // Enqueue for further traversal
-            }
+                if (neighbor == startNode) stop = true; 
+            } 
         }
     }
 }
 
 
 void Game::createButton(int x, int y, sf::RectangleShape& button, sf::Text& text, const std::string& title) {
-    button = sf::RectangleShape(sf::Vector2f(100, 30)); 
+    button = sf::RectangleShape(sf::Vector2f(105, 30)); 
     button.setPosition(x, y); 
     button.setOutlineColor(sf::Color::White); 
     button.setOutlineThickness(3.f); 
@@ -288,6 +320,19 @@ void Game::createButton(int x, int y, sf::RectangleShape& button, sf::Text& text
     text.setCharacterSize(15); 
     text.setFillColor(sf::Color::White);
     text.setPosition(button.getPosition().x + 5, button.getPosition().y + 5); 
+}
+
+void Game::clearTraversal() {
+    for (auto& circle : circles) {
+        circle->highlighted = false;
+        circle->setcolor(sf::Color(255, 255, 0, 210));
+    }
+    stop = false;
+}
+
+void Game::clearGraph() {
+    circles.clear();
+    stop = false;   
 }
 
 
