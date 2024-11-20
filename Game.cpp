@@ -34,6 +34,29 @@ void Game::processEvents() {
             window.close();
 
         if (event.type == sf::Event::MouseWheelScrolled) {
+
+            /*
+            This code handles the mouse position adjustment when zooming in and out of the view.
+
+            newMousePosition.x = (OriginalMousePosition.x - width) / ZoomFactor + width;
+            newMousePosition.y = (OriginalMousePosition.y - height) / ZoomFactor + height;
+
+
+            The process is a combination of **scaling** and **translation**:
+
+            Translation: Subtract the center coordinates from the current mouse position to shift the origin to the center of the view.
+            adjustedMousePosition = mousePosition - sf::Vector2i(width, height);
+
+            Scaling: Divide the translated mouse position by the zoom factor to adjust the position relative to the zoom level.
+            scaledMousePosition = adjustedMousePosition / zoomFactor;
+
+            Translation (again): Add the center coordinates back to the scaled position to restore the mouse position relative to the original view center.
+            finalMousePosition = scaledMousePosition + sf::Vector2i(width, height);
+
+            The result is that the mouse position adapts correctly to the zooming action, ensuring that the zoom is centered around the point (width, height) without causing disorientation in the user interface.
+            
+            SFML has inbuilt method for this so i am doing that but the priciple lies the same as above. 
+            */
             AdjustViewCoordinates = true; 
             float zoomFactor = 1.1f; // Adjust zoom sensitivity
 
