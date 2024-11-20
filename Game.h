@@ -5,7 +5,6 @@
 #include <iostream>
 #include <queue>
 #include <memory>
-#include "global.h"
 
 //float zoomFactor = 1.1f;
 
