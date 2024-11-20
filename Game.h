@@ -5,13 +5,17 @@
 #include <iostream>
 #include <queue>
 #include <memory>
+#include "global.h"
+
+//float zoomFactor = 1.1f;
 
 class Game {
 public:
     Game();
     void run();
-
+    void updateMousePosition();
 private:
+
     // Core SFML window and properties
     sf::RenderWindow window;
     bool drawLine;
@@ -50,7 +54,9 @@ private:
     // Connection rendering
     void drawConnections(sf::RenderWindow& window);
     bool stop = false; 
+    bool isScrolled = false; 
     bool AdjustViewCoordinates = false; 
+  
     bool selectDFS = false; 
     bool selectBFS = false; 
     sf::Clock clock;
@@ -62,5 +68,4 @@ private:
     void createButton(int x, int y, sf::RectangleShape& button, sf::Text& text, const std::string& title);
     void clearTraversal();
     void clearGraph();
-    void renderPathInReverseOrder(const std::vector<makeCircle*>& path);
 };

@@ -15,10 +15,16 @@ Game::Game()
 
 void Game::run() {
     while (window.isOpen()) {
+        updateMousePosition(); 
         processEvents();
         update();
         render();
     }
+}
+
+void Game::updateMousePosition() {
+    sf::Vector2i _mousePosition = sf::Mouse::getPosition(window);
+    newMousePosition = sf::Vector2i(window.mapPixelToCoords(_mousePosition));
 }
 
 void Game::processEvents() {
@@ -28,7 +34,10 @@ void Game::processEvents() {
             window.close();
 
         if (event.type == sf::Event::MouseWheelScrolled) {
+            AdjustViewCoordinates = true; 
             float zoomFactor = 1.1f; // Adjust zoom sensitivity
+
+            // Adjust zoom factor based on scroll direction
             if (event.mouseWheelScroll.delta > 0) {
                 // Zoom in
                 view.zoom(1.0f / zoomFactor);
@@ -41,19 +50,30 @@ void Game::processEvents() {
             // Get the mouse position in pixel coordinates
             sf::Vector2i pixelMousePosition = sf::Mouse::getPosition(window);
 
-            // Convert the mouse position to world coordinates
-            sf::Vector2f beforeZoomMouseWorldPosition = window.mapPixelToCoords(pixelMousePosition);
+            // Convert the pixel position to world coordinates
+            sf::Vector2f worldMousePositionBefore = window.mapPixelToCoords(pixelMousePosition);
 
-            // Adjust the view's center to keep the mouse position consistent
-            sf::Vector2f afterZoomMouseWorldPosition = window.mapPixelToCoords(pixelMousePosition);
-            sf::Vector2f offset = beforeZoomMouseWorldPosition - afterZoomMouseWorldPosition;
+            // Apply the view changes (zoom)
+            window.setView(view);
 
+            // Recalculate world coordinates after the zoom
+            sf::Vector2f worldMousePositionAfter = window.mapPixelToCoords(pixelMousePosition);
+
+            // Calculate the offset caused by zooming and adjust the view
+            sf::Vector2f offset = worldMousePositionBefore - worldMousePositionAfter;
             view.move(offset);
+
+            // Update the window view
+            window.setView(view);
         }
 
         handleKeyPress(event);  // Check for key press to add a new circle
 
-        if (buttonDfs.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+        // We should not change the button according to the viewport when scrolling so we pass the new value of mouse which is tempMousePos which just take the co-ordinates of default mouse vieport
+        
+        sf::Vector2i tempMousePos = sf::Mouse::getPosition(window);
+        if (buttonDfs.getGlobalBounds().contains(static_cast<float>(tempMousePos.x), static_cast<float>(tempMousePos.y))) {
+            updateMousePosition();
             buttonDfs.setOutlineColor(sf::Color::Green); 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 selectDFS = true;
@@ -63,7 +83,7 @@ void Game::processEvents() {
         else buttonDfs.setOutlineColor(sf::Color::White);
 
 
-        if (buttonBfs.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+        if (buttonBfs.getGlobalBounds().contains(static_cast<float>(tempMousePos.x), static_cast<float>(tempMousePos.y))) {
             buttonBfs.setOutlineColor(sf::Color::Green);
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 selectBFS = true;
@@ -72,7 +92,7 @@ void Game::processEvents() {
         }
         else buttonBfs.setOutlineColor(sf::Color::White);
 
-        if (buttonClearTraversal.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+        if (buttonClearTraversal.getGlobalBounds().contains(static_cast<float>(tempMousePos.x), static_cast<float>(tempMousePos.y))) {
             buttonClearTraversal.setOutlineColor(sf::Color::Green);
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 clearTraversal();
@@ -80,7 +100,7 @@ void Game::processEvents() {
         }
         else buttonClearTraversal.setOutlineColor(sf::Color::White);
 
-        if (buttonClearAll.getGlobalBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
+        if (buttonClearAll.getGlobalBounds().contains(static_cast<float>(tempMousePos.x), static_cast<float>(tempMousePos.y))) {
             buttonClearAll.setOutlineColor(sf::Color::Red); 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
                 clearGraph();
@@ -108,9 +128,9 @@ void Game::processEvents() {
     }
 }
 
-void Game::update() {
-    newMousePosition = sf::Mouse::getPosition(window);
 
+void Game::update() {
+    //newMousePosition = sf::Mouse::getPosition(window);
     // Update all circles to handle dragging
     for (size_t i = 0; i < circles.size(); ++i) {
         circles[i]->update(newMousePosition, sf::Mouse::isButtonPressed(sf::Mouse::Left), selectedCircleIndex, i);
@@ -125,7 +145,7 @@ void Game::update() {
     if (snappingMode) {
         processSnappingMode();
     }
-    
+
 }
 
 void Game::processSnappingMode() {
@@ -171,11 +191,10 @@ void Game::render() {
     if (stop) {
         for (auto& node : circles) {
                 if (node->highlighted) {
-                    sf::sleep(sf::milliseconds(10));
                     node->setcolor(sf::Color(255, 255, 0, 255));
                 }
                 else {
-                    node->setcolor(sf::Color(255, 255, 0, 80));
+                    node->setcolor(sf::Color(255, 255, 255, 180));
                 }
         }
 
@@ -186,6 +205,8 @@ void Game::render() {
     for (const auto& circle : circles) {
         circle->render(window);
     }
+
+    window.setView(window.getDefaultView());
     window.draw(buttonDfs); 
     window.draw(buttonBfs); 
     window.draw(textDfs); 
@@ -194,6 +215,7 @@ void Game::render() {
     window.draw(buttonClearAll);
     window.draw(textClearTraversal);
     window.draw(textClearAll);
+    window.setView(view); 
 
     window.display();
 }
@@ -205,8 +227,8 @@ void Game::handleKeyPress(sf::Event& event) {
 }
 
 void Game::addNewCircle() {
-    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-    circles.emplace_back(std::make_unique<makeCircle>(8.f, mousePosition.x, mousePosition.y));
+        circles.emplace_back(std::make_unique<makeCircle>(8.f, newMousePosition.x, newMousePosition.y));
+
 }
 
 void Game::connectNodes(makeCircle* node1, makeCircle* node2) {
@@ -235,11 +257,10 @@ void Game::drawConnections(sf::RenderWindow& window) {
 
                 sf::RectangleShape rectangle(sf::Vector2f(distance, RECTANGLE_THICKNESS));
                 if (node->highlighted && connectedNode->highlighted) {
-                    sf::sleep(sf::milliseconds(10));
                     rectangle.setFillColor(sf::Color::Green); 
                 }
                 else {
-                    rectangle.setFillColor(sf::Color(50, 205, 50, 180));
+                    rectangle.setFillColor(sf::Color(255, 255, 255, 200));
                 }
                 rectangle.setOrigin(0.f, RECTANGLE_THICKNESS / 2);
                 rectangle.setPosition(pos1);
@@ -303,9 +324,9 @@ void Game::doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<make
         for (auto& neighbor : currentNode->connections) {
             // If the neighbor hasn't been visited
             if (std::find(visitedNodes.begin(), visitedNodes.end(), neighbor) == visitedNodes.end()) {
-                neighbor->highlighted = true;          // Mark as visited (for visualization)
-                visitedNodes.push_back(neighbor);     // Add to visited list
-                queue.push(neighbor);                 // Enqueue for further traversal
+                neighbor->highlighted = true;         
+                visitedNodes.push_back(neighbor);     
+                queue.push(neighbor);                
                 if (neighbor == startNode) {
                     stop = true;
                     break;
@@ -333,7 +354,7 @@ void Game::createButton(int x, int y, sf::RectangleShape& button, sf::Text& text
 void Game::clearTraversal() {
     for (auto& circle : circles) {
         circle->highlighted = false;
-        circle->setcolor(sf::Color(255, 255, 0, 210));
+        circle->setcolor(sf::Color::White);
     }
     stop = false;
 }

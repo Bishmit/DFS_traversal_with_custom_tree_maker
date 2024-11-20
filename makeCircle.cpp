@@ -4,7 +4,7 @@
 makeCircle::makeCircle(float radius, int x, int y) {
     circle.setRadius(radius);
     circle.setPosition(static_cast<float>(x), static_cast<float>(y));
-    circle.setFillColor(sf::Color(255, 255, 0, 210));
+    circle.setFillColor(sf::Color::White);
     isDragged = false;
 }
 
@@ -52,4 +52,5 @@ void makeCircle::addConnection(makeCircle* otherNode) {
 void makeCircle:: setcolor(sf::Color color) {
     circle.setFillColor(color); 
 }
+
 
