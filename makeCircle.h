@@ -7,7 +7,8 @@ public:
     sf::CircleShape circle;
     std::vector<makeCircle*> connections;
     bool highlighted = false; 
-
+    sf::Time highlightStartTime = sf::Time::Zero;
+    sf::Clock clock;
     makeCircle(float radius, int x, int y);
     void update(sf::Vector2i &mousepos, bool mousepressed, int &selectedIndex, int currentIndex);
     void render(sf::RenderWindow& window);

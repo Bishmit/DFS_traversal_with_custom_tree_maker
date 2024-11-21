@@ -33,6 +33,7 @@ void Game::processEvents() {
         if (event.type == sf::Event::Closed)
             window.close();
 
+
         if (event.type == sf::Event::MouseWheelScrolled) {
 
             /*
@@ -133,6 +134,7 @@ void Game::processEvents() {
 
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            shiftRectangleColor = true; 
             for (int i = 0; i < circles.size(); i++) {
                 if (circles[i]->getBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) { 
                     std::vector<makeCircle*> visitedNodes;
@@ -212,17 +214,29 @@ void Game::render() {
     window.clear();
 
     if (stop) {
-        for (auto& node : circles) {
+        /*for (auto& node : circles) {
                 if (node->highlighted) {
                     node->setcolor(sf::Color(255, 255, 0, 255));
                 }
                 else {
                     node->setcolor(sf::Color(255, 255, 255, 180));
                 }
+        }*/
+        if (clock.getElapsedTime().asSeconds() >= colorUpdateInterval) {
+            if (nodecoloring < circles.size()) {
+                if (circles[nodecoloring]->highlighted) {
+                    circles[nodecoloring]->setcolor(sf::Color(0, 255, 0, 250));
+                }
+                else {
+                    circles[nodecoloring]->setcolor(sf::Color(255, 255, 255, 120));
+                }
+                ++nodecoloring; 
+            }
+            clock.restart(); 
         }
 
     }
-    drawConnections(window);  // Draw connections between circles
+    drawConnections(window, clock);  // Draw connections between circles
 
     // Draw each circle and connections
     for (const auto& circle : circles) {
@@ -261,12 +275,14 @@ void Game::connectNodes(makeCircle* node1, makeCircle* node2) {
     }
 }
 
-void Game::drawConnections(sf::RenderWindow& window) {
+void Game::drawConnections(sf::RenderWindow& window, sf::Clock& animationClock) {
     constexpr float RECTANGLE_THICKNESS = 2.0f;
     constexpr float DEG_TO_RAD = 180.f / 3.14159f;
+    constexpr float ANIMATION_DURATION = 0.5f;
+    float elapsedTime = animationClock.getElapsedTime().asSeconds();
 
     for (const auto& node : circles) {
-        const sf::Vector2f& pos1 = sf::Vector2f(node->getPos().x + 4, node->getPos().y + 4); 
+        const sf::Vector2f& pos1 = sf::Vector2f(node->getPos().x + 4, node->getPos().y + 4);
 
         // Draw each unique connection
         for (const auto& connectedNode : node->connections) {
@@ -279,22 +295,29 @@ void Game::drawConnections(sf::RenderWindow& window) {
                 float angle = std::atan2(delta.y, delta.x) * DEG_TO_RAD;
 
                 sf::RectangleShape rectangle(sf::Vector2f(distance, RECTANGLE_THICKNESS));
-                if (node->highlighted && connectedNode->highlighted) {
-                    rectangle.setFillColor(sf::Color::Green); 
+
+                // Set color based on highlighting
+                if (shiftRectangleColor) {
+                    if (node->highlighted && connectedNode->highlighted) {
+                        rectangle.setFillColor(sf::Color(0, 255, 0, 200));
+                    }
+                    else {
+                        rectangle.setFillColor(sf::Color(255, 255, 255, 150)); 
+                    }
                 }
                 else {
-                    rectangle.setFillColor(sf::Color(255, 255, 255, 200));
+                    rectangle.setFillColor(sf::Color(255, 255, 255, 210));
                 }
                 rectangle.setOrigin(0.f, RECTANGLE_THICKNESS / 2);
                 rectangle.setPosition(pos1);
                 rectangle.setRotation(angle);
+
+                // Draw rectangle
                 window.draw(rectangle);
             }
         }
     }
 }
-
-
 
 // Helper function to check if two positions are close enough to snap
 bool Game::isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
@@ -307,6 +330,7 @@ void Game:: doDFS(makeCircle* startnode, makeCircle* parentNode, std::vector<mak
         return;
     }
     parentNode->highlighted = true; 
+    //parentNode->setcolor(sf::Color::Yellow); 
     visitedNode.push_back(parentNode);
 
     if (parentNode == startnode) {
@@ -379,12 +403,15 @@ void Game::clearTraversal() {
         circle->highlighted = false;
         circle->setcolor(sf::Color::White);
     }
+    nodecoloring = 0; 
     stop = false;
+    shiftRectangleColor = false; 
 }
 
 void Game::clearGraph() {
     circles.clear();
     stop = false;   
+    shiftRectangleColor = false; 
 }
 
 

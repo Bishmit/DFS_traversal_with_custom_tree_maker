@@ -52,5 +52,3 @@ void makeCircle::addConnection(makeCircle* otherNode) {
 void makeCircle:: setcolor(sf::Color color) {
     circle.setFillColor(color); 
 }
-
-

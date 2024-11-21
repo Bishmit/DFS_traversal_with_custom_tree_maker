@@ -28,6 +28,10 @@ private:
     sf::Vector2i newMousePosition;
     makeCircle* selectedNode = nullptr;
     int selectedCircleIndex = -1;
+    float colorUpdateInterval = 0.2f;
+    int newnodeColoring;
+    int nodecoloring = 0; 
+    bool fillrectangle = false; 
 
     // Circles (nodes) in the game
     std::vector<std::unique_ptr<makeCircle>> circles;
@@ -51,15 +55,16 @@ private:
     void selectNearestCircleAndConnect();
 
     // Connection rendering
-    void drawConnections(sf::RenderWindow& window);
+    void drawConnections(sf::RenderWindow& window, sf::Clock& animationClock);
     bool stop = false; 
     bool isScrolled = false; 
     bool AdjustViewCoordinates = false; 
   
     bool selectDFS = false; 
     bool selectBFS = false; 
+    bool shiftRectangleColor = false; 
     sf::Clock clock;
-    bool shouldRenderSquare = false;
+    bool isDoneWithCircleColoring = false;
     // Helper function
     bool isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
     void doDFS(makeCircle* node, makeCircle* parentNode, std::vector<makeCircle*>& visitedNode);
