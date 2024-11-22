@@ -28,14 +28,18 @@ private:
     sf::Vector2i newMousePosition;
     makeCircle* selectedNode = nullptr;
     int selectedCircleIndex = -1;
-    float colorUpdateInterval = 0.2f;
+    float colorUpdateInterval = 0.3f;
     int newnodeColoring;
     int nodecoloring = 0; 
+    int nodecoloringCircles = 0; 
     bool fillrectangle = false; 
+    bool isbuttonChecked = false; 
 
     // Circles (nodes) in the game
     std::vector<std::unique_ptr<makeCircle>> circles;
-    std::vector<makeCircle*> visitedNodes;
+    std::vector<makeCircle*> visitedNodesDFS;
+    std::vector<makeCircle*> visitedNodesBFS; 
+    
 
     // Core methods for game loop
     void processEvents();
@@ -62,7 +66,6 @@ private:
   
     bool selectDFS = false; 
     bool selectBFS = false; 
-    bool shiftRectangleColor = false; 
     sf::Clock clock;
     bool isDoneWithCircleColoring = false;
     // Helper function

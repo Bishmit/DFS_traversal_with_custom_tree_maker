@@ -134,7 +134,7 @@ void Game::processEvents() {
 
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-            shiftRectangleColor = true; 
+            isbuttonChecked = true; 
             for (int i = 0; i < circles.size(); i++) {
                 if (circles[i]->getBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) { 
                     std::vector<makeCircle*> visitedNodes;
@@ -210,18 +210,20 @@ void Game::selectNearestCircleAndConnect() {
 }
 
 void Game::render() {
-    window.setView(view); 
+    window.setView(view);
     window.clear();
 
-    if (stop) {
-        /*for (auto& node : circles) {
-                if (node->highlighted) {
-                    node->setcolor(sf::Color(255, 255, 0, 255));
-                }
-                else {
-                    node->setcolor(sf::Color(255, 255, 255, 180));
-                }
-        }*/
+    //if (stop) {
+    //    /*for (auto& node : circles) {
+    //            if (node->highlighted) {
+    //                node->setcolor(sf::Color(255, 255, 0, 255));
+    //            }
+    //            else {
+    //                node->setcolor(sf::Color(255, 255, 255, 180));
+    //            }
+    //    }*/
+
+    if (selectBFS && isbuttonChecked) {
         if (clock.getElapsedTime().asSeconds() >= colorUpdateInterval) {
             if (nodecoloring < circles.size()) {
                 if (circles[nodecoloring]->highlighted) {
@@ -230,12 +232,28 @@ void Game::render() {
                 else {
                     circles[nodecoloring]->setcolor(sf::Color(255, 255, 255, 120));
                 }
-                ++nodecoloring; 
+                ++nodecoloring;
             }
-            clock.restart(); 
+            clock.restart();
         }
 
     }
+    if (selectDFS && isbuttonChecked) {
+        if (clock.getElapsedTime().asSeconds() >= colorUpdateInterval) {
+            if (nodecoloring < visitedNodesDFS.size()) {
+                visitedNodesDFS[nodecoloring]->setcolor(sf::Color(0, 255, 0, 250));
+                ++nodecoloring;
+            }
+            if (nodecoloringCircles < circles.size()) {
+                if (!circles[nodecoloringCircles]->highlighted) {
+                    circles[nodecoloringCircles]->setcolor(sf::Color(255, 255, 255, 120));
+                }
+                ++nodecoloringCircles;
+            }
+            clock.restart();
+        }
+    }
+   
     drawConnections(window, clock);  // Draw connections between circles
 
     // Draw each circle and connections
@@ -297,17 +315,13 @@ void Game::drawConnections(sf::RenderWindow& window, sf::Clock& animationClock) 
                 sf::RectangleShape rectangle(sf::Vector2f(distance, RECTANGLE_THICKNESS));
 
                 // Set color based on highlighting
-                if (shiftRectangleColor) {
                     if (node->highlighted && connectedNode->highlighted) {
-                        rectangle.setFillColor(sf::Color(0, 255, 0, 200));
+                        rectangle.setFillColor(sf::Color(0, 255, 0, 240));
                     }
                     else {
-                        rectangle.setFillColor(sf::Color(255, 255, 255, 150)); 
+                        rectangle.setFillColor(sf::Color(255, 255, 255, 210)); 
                     }
-                }
-                else {
-                    rectangle.setFillColor(sf::Color(255, 255, 255, 210));
-                }
+                
                 rectangle.setOrigin(0.f, RECTANGLE_THICKNESS / 2);
                 rectangle.setPosition(pos1);
                 rectangle.setRotation(angle);
@@ -329,19 +343,29 @@ void Game:: doDFS(makeCircle* startnode, makeCircle* parentNode, std::vector<mak
     if (startnode == nullptr || parentNode == nullptr || stop ) {
         return;
     }
-    parentNode->highlighted = true; 
-    //parentNode->setcolor(sf::Color::Yellow); 
-    visitedNode.push_back(parentNode);
 
+    parentNode->highlighted = true;
+       
+    visitedNodesDFS.push_back(parentNode);
+    std::cout << parentNode->connections[0] << " " << parentNode << "\n"; 
+    
+   // parentNode->setcolor(sf::Color::Green);
+      
     if (parentNode == startnode) {
         stop = true;
         return;
     }
 
     // visit all the node recursively 
-    for (auto& neighbour : parentNode->connections) {
+    /*for (auto& neighbour : parentNode->connections) {
         if (std::find(visitedNode.begin(), visitedNode.end(), neighbour) == visitedNode.end()) {
             doDFS(startnode, neighbour, visitedNode);
+        }
+    }*/
+    for (int i = 0; i < parentNode->connections.size(); i++) {
+        
+        if (std::find(visitedNode.begin(), visitedNode.end(), parentNode->connections[i]) == visitedNode.end()) {
+            doDFS(startnode, parentNode->connections[i], visitedNodesDFS);
         }
     }
 }
@@ -356,7 +380,7 @@ void Game::doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<make
 
     // Mark the start node as visited and enqueue it
     parentNode->highlighted = true;
-    visitedNodes.push_back(parentNode);
+    visitedNodesBFS.push_back(parentNode);
     queue.push(parentNode);
 
     while (!queue.empty() && !stop) {
@@ -370,7 +394,7 @@ void Game::doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<make
         
         for (auto& neighbor : currentNode->connections) {
             // If the neighbor hasn't been visited
-            if (std::find(visitedNodes.begin(), visitedNodes.end(), neighbor) == visitedNodes.end()) {
+            if (std::find(visitedNodesBFS.begin(), visitedNodesBFS.end(), neighbor) == visitedNodesBFS.end()) {
                 neighbor->highlighted = true;         
                 visitedNodes.push_back(neighbor);     
                 queue.push(neighbor);                
@@ -399,19 +423,23 @@ void Game::createButton(int x, int y, sf::RectangleShape& button, sf::Text& text
 }
 
 void Game::clearTraversal() {
+    visitedNodesDFS.clear(); 
+    visitedNodesBFS.clear(); 
     for (auto& circle : circles) {
         circle->highlighted = false;
         circle->setcolor(sf::Color::White);
     }
     nodecoloring = 0; 
+    nodecoloringCircles = 0; 
     stop = false;
-    shiftRectangleColor = false; 
+    isbuttonChecked = false; 
+    system("cls");
 }
 
 void Game::clearGraph() {
     circles.clear();
     stop = false;   
-    shiftRectangleColor = false; 
+    isbuttonChecked = false; 
 }
 
 
