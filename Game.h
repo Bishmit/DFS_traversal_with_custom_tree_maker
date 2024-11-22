@@ -6,8 +6,6 @@
 #include <queue>
 #include <memory>
 
-//float zoomFactor = 1.1f;
-
 class Game {
 public:
     Game();
@@ -15,7 +13,7 @@ public:
     void updateMousePosition();
 private:
 
-    // Core SFML window and properties
+    //SFML window and properties
     sf::RenderWindow window;
     bool drawLine;
     bool snappingMode;
@@ -28,20 +26,17 @@ private:
     sf::Vector2i newMousePosition;
     makeCircle* selectedNode = nullptr;
     int selectedCircleIndex = -1;
-    float colorUpdateInterval = 0.3f;
+    float colorUpdateInterval = 0.5f;
     int newnodeColoring;
     int nodecoloring = 0; 
-    int nodecoloringCircles = 0; 
-    bool fillrectangle = false; 
     bool isbuttonChecked = false; 
 
     // Circles (nodes) in the game
     std::vector<std::unique_ptr<makeCircle>> circles;
     std::vector<makeCircle*> visitedNodesDFS;
     std::vector<makeCircle*> visitedNodesBFS; 
-    
 
-    // Core methods for game loop
+    //methods for game loop
     void processEvents();
     void update();
     void render();
@@ -58,21 +53,29 @@ private:
     void selectStartingCircle();
     void selectNearestCircleAndConnect();
 
-    // Connection rendering
-    void drawConnections(sf::RenderWindow& window, sf::Clock& animationClock);
+    // Connection making
+    void makeConnections(sf::RenderWindow& window, sf::Clock& animationClock);
+
+    // some other variable
+
     bool stop = false; 
     bool isScrolled = false; 
     bool AdjustViewCoordinates = false; 
   
     bool selectDFS = false; 
     bool selectBFS = false; 
+    std::vector<sf::RectangleShape> rectangles; 
     sf::Clock clock;
     bool isDoneWithCircleColoring = false;
+    bool something = false; 
+
     // Helper function
     bool isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
     void doDFS(makeCircle* node, makeCircle* parentNode, std::vector<makeCircle*>& visitedNode);
     void doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNodes);
     void createButton(int x, int y, sf::RectangleShape& button, sf::Text& text, const std::string& title);
+
+    //reset clear function 
     void clearTraversal();
     void clearGraph();
 };

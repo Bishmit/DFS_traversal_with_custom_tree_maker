@@ -19,8 +19,7 @@ public:
     void setPosition(sf::Vector2f& position);
     void addConnection(makeCircle* otherNode);
     void setcolor(sf::Color color);
-    //void setColor(const sf::Color& color);
-private:
-    
+   
+private:  
     bool isDragged; 
 };
