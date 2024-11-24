@@ -1,10 +1,10 @@
-#include "Game.h"
+#include "../Include/Game.h"
 
 Game::Game()
     : window(sf::VideoMode(1300, 775), "Graph Traversal",
       sf::Style::Titlebar | sf::Style::Close), drawLine(false), snappingMode(false), selectedNode(nullptr) {
     window.setFramerateLimit(60);
-    if (!font.loadFromFile("TimesNewRoman.ttf")) {
+    if (!font.loadFromFile("Assets/TimesNewRoman.ttf")) {
         std::cout << "Font not loaded\n";
     }
     createButton(1300 - 150, 10, buttonDfs, textDfs, "DFS");
@@ -215,7 +215,7 @@ void Game::render() {
     window.setView(view);
     window.clear();
 
-    st.render(window); 
+    //st.render(window); 
 
     if (selectBFS && isbuttonChecked) { 
         if (clock.getElapsedTime().asSeconds() >= colorUpdateInterval) {

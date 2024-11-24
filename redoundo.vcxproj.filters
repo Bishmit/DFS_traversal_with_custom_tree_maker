@@ -15,28 +15,31 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="makeCircle.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="src\makeCircle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SelectionRectangle.cpp">
+    <ClCompile Include="src\SelectionRectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="makeCircle.h">
+    <ClInclude Include="Include\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="Include\makeCircle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SelectionRectangle.h">
+    <ClInclude Include="Include\SelectionRectangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Assets\TimesNewRoman.ttf" />
   </ItemGroup>
 </Project>

@@ -133,15 +133,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="makeCircle.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="SelectionRectangle.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\makeCircle.cpp" />
+    <ClCompile Include="src\SelectionRectangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="makeCircle.h" />
-    <ClInclude Include="SelectionRectangle.h" />
+    <ClInclude Include="Include\Game.h" />
+    <ClInclude Include="Include\makeCircle.h" />
+    <ClInclude Include="Include\SelectionRectangle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Assets\TimesNewRoman.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
