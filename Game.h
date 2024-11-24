@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "makeCircle.h"
+#include "SelectionRectangle.h"
 #include <iostream>
 #include <queue>
 #include <memory>
@@ -30,6 +31,9 @@ private:
     int newnodeColoring;
     int nodecoloring = 0; 
     bool isbuttonChecked = false; 
+
+    // Selection tool 
+    SelectionRectangle st; 
 
     // Circles (nodes) in the game
     std::vector<std::unique_ptr<makeCircle>> circles;

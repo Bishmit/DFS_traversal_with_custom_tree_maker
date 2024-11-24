@@ -155,6 +155,7 @@ void Game::processEvents() {
 
 
 void Game::update() {
+    st.update(newMousePosition); 
     //newMousePosition = sf::Mouse::getPosition(window);
     // Update all circles to handle dragging
     for (size_t i = 0; i < circles.size(); ++i) {
@@ -213,6 +214,8 @@ void Game::selectNearestCircleAndConnect() {
 void Game::render() {
     window.setView(view);
     window.clear();
+
+    st.render(window); 
 
     if (selectBFS && isbuttonChecked) { 
         if (clock.getElapsedTime().asSeconds() >= colorUpdateInterval) {
