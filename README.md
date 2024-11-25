@@ -1,7 +1,6 @@
 # Custom Graph Traversal Simulator
 
-[Watch the demo video](Assets/demo.mp4)
-
+[Download the demo video](Assets/demo.mp4)
 
 # Description
 This is a dynamic graph traversal simulator built using SFML. It allows you to create graphs interactively and visualize DFS or BFS traversal dynamically.
