@@ -42,4 +42,7 @@
   <ItemGroup>
     <Font Include="Assets\TimesNewRoman.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Assets\Demo.mp4" />
+  </ItemGroup>
 </Project>
