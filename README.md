@@ -1,6 +1,6 @@
 # Custom Graph Traversal Simulator
 
-[Download the demo video](Assets/demo.mp4)
+[Download the demo video](https://github.com/Bishmit/DFS_traversal_with_custom_tree_maker/raw/master/Assets/Demo.mp4)
 
 # Description
 This is a dynamic graph traversal simulator built using SFML. It allows you to create graphs interactively and visualize DFS or BFS traversal dynamically.
