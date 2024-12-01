@@ -11,8 +11,12 @@ public:
 
 	bool isSelectionToolClicked();
 
-private: 
-	sf::RectangleShape selectionTool; 
+	void dynamicWidthHeightAdjustment(sf::Vector2i& mousepos);
 
+private: 
+	
+	sf::RectangleShape selectionTool; 
+	bool isClicked = false, isChecked = false; 
+	
 };
 

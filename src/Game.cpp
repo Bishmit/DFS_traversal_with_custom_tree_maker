@@ -215,7 +215,7 @@ void Game::render() {
     window.setView(view);
     window.clear();
 
-    //st.render(window); 
+    st.render(window); 
 
     if (selectBFS && isbuttonChecked) { 
         if (clock.getElapsedTime().asSeconds() >= colorUpdateInterval) {
