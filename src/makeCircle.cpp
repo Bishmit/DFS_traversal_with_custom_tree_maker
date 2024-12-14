@@ -10,7 +10,6 @@ makeCircle::makeCircle(float radius, int x, int y) {
 
 void makeCircle::update(sf::Vector2i& mousePos, bool mousePressed, int& selectedIndex, int currentIndex, bool isDragging) {
     // Check if the mouse was initially pressed inside the circle to start dragging
-    if (!isDragging) {
         if (mousePressed) {
             if (circle.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
                 selectedIndex = currentIndex; // Lock onto this circle
@@ -28,12 +27,11 @@ void makeCircle::update(sf::Vector2i& mousePos, bool mousePressed, int& selected
             circle.setPosition(static_cast<float>(mousePos.x) - circle.getRadius(), static_cast<float>(mousePos.y) - circle.getRadius());
         }
     }
-    
-}
+  
 
-void makeCircle::changeDisplacement(sf::Vector2f displacement) {
-    
-    circle.setPosition(circle.getPosition() + displacement);
+void makeCircle::changeDisplacement(sf::Vector2f displacement, sf::Vector2f mousepos) { 
+   // sf::Vector2f initialOffset = sf::Vector2f(mousepos.x, mousepos.y) - circle.getPosition();
+     circle.setPosition(circle.getPosition() + displacement);  
 }
 
 

@@ -31,6 +31,7 @@ private:
     int newnodeColoring;
     int nodecoloring = 0; 
     bool isbuttonChecked = false; 
+    bool moveNode = false; 
 
     // Selection tool 
     SelectionRectangle st; 

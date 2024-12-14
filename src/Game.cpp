@@ -459,33 +459,28 @@ void Game::coverNodeOnSelect() {
 }
 
 void Game::displacePosition() {
-    static sf::Vector2f initialMousePosition;          
+    static sf::Vector2f initialMousePosition; 
+    sf::Vector2f displacement; 
     sf::Vector2f _newMousePosition = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        if (!isDragging) {
-            // Start dragging
-            isDragging = true;
-            initialMousePosition = _newMousePosition;
-        }
-        else {
-            // Calculate displacement
-            sf::Vector2f displacement = _newMousePosition - initialMousePosition;
-
-            // Move all selected nodes
-            for (auto& node : circles) {
-                if (node->isUnderSelection) {
-                    //moveSelection = true; 
-                    node->setcolor(sf::Color::Red);
-                    node->changeDisplacement(displacement); 
-                }
+        isDragging = true; 
+        initialMousePosition = _newMousePosition; 
+        for (auto& node : circles) {
+            if (node->isUnderSelection) {
+                node->setcolor(sf::Color::Yellow); 
+                moveSelection = true; 
             }
-           
-            initialMousePosition = _newMousePosition; 
+          }
+    }   
+    else if(sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
+        displacement = _newMousePosition - initialMousePosition ; 
+        initialMousePosition = _newMousePosition; 
+        for (auto& node : circles) {
+            if (node->isUnderSelection) {
+                node->changeDisplacement(displacement, _newMousePosition); 
+            }
         }
-    }
-    else {
-        isDragging = false; 
     }
 }
 
