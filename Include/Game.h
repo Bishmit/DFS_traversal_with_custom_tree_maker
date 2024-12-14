@@ -65,6 +65,7 @@ private:
     bool stop = false; 
     bool isScrolled = false; 
     bool AdjustViewCoordinates = false; 
+    bool isDragging = false;
   
     bool selectDFS = false; 
     bool selectBFS = false; 
@@ -72,6 +73,7 @@ private:
     sf::Clock clock;
     bool isDoneWithCircleColoring = false;
     bool something = false; 
+    bool moveSelection = false; 
 
     // Helper function
     bool isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
@@ -82,4 +84,6 @@ private:
     //reset clear function 
     void clearTraversal();
     void clearGraph();
+    void coverNodeOnSelect();
+    void displacePosition();
 };

@@ -1,5 +1,7 @@
 #pragma once
 #include<SFML/Graphics.hpp>
+#include<iostream>
+
 class SelectionRectangle
 {
 public: 
@@ -12,10 +14,10 @@ public:
 	bool isSelectionToolClicked();
 
 	void dynamicWidthHeightAdjustment(sf::Vector2i& mousepos);
+	bool ctrlEnabled = false; 
 
+	sf::RectangleShape selectionTool;
 private: 
-	
-	sf::RectangleShape selectionTool; 
 	bool isClicked = false, isChecked = false; 
 	
 };

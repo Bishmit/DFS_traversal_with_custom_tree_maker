@@ -159,7 +159,7 @@ void Game::update() {
     //newMousePosition = sf::Mouse::getPosition(window);
     // Update all circles to handle dragging
     for (size_t i = 0; i < circles.size(); ++i) {
-        circles[i]->update(newMousePosition, sf::Mouse::isButtonPressed(sf::Mouse::Left), selectedCircleIndex, i);
+        circles[i]->update(newMousePosition, sf::Mouse::isButtonPressed(sf::Mouse::Left), selectedCircleIndex, i, isDragging);
     }
 
     // Toggle snapping mode with "S" key
@@ -173,6 +173,7 @@ void Game::update() {
     }
 
     makeConnections(window, clock);  // make connections between circles
+    coverNodeOnSelect(); 
 }
 
 void Game::processSnappingMode() {
@@ -267,7 +268,10 @@ void Game::render() {
                 node->setcolor(sf::Color(255, 255, 255, 180));
             }
         }
+
     }
+
+    displacePosition(); 
 
     // Draw each circle and connections
     for (const auto& circle : circles) {
@@ -444,5 +448,46 @@ void Game::clearGraph() {
     stop = false;   
     isbuttonChecked = false; 
 }
+
+void Game::coverNodeOnSelect() {
+    for (int i = 0; i < circles.size(); i++) {
+       if(st.selectionTool.getGlobalBounds().contains(circles[i]->getPos().x, circles[i]->getPos().y))
+        {
+           circles[i]->isUnderSelection = true; 
+        }
+    }
+}
+
+void Game::displacePosition() {
+    static sf::Vector2f initialMousePosition;          
+    sf::Vector2f _newMousePosition = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        if (!isDragging) {
+            // Start dragging
+            isDragging = true;
+            initialMousePosition = _newMousePosition;
+        }
+        else {
+            // Calculate displacement
+            sf::Vector2f displacement = _newMousePosition - initialMousePosition;
+
+            // Move all selected nodes
+            for (auto& node : circles) {
+                if (node->isUnderSelection) {
+                    //moveSelection = true; 
+                    node->setcolor(sf::Color::Red);
+                    node->changeDisplacement(displacement); 
+                }
+            }
+           
+            initialMousePosition = _newMousePosition; 
+        }
+    }
+    else {
+        isDragging = false; 
+    }
+}
+
 
 

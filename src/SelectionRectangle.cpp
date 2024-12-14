@@ -1,5 +1,6 @@
 #include "../Include/SelectionRectangle.h"
 
+
 SelectionRectangle::SelectionRectangle()
 {
 
@@ -37,8 +38,7 @@ void SelectionRectangle::mouseControl(sf::Vector2i& mousepos) {
 
 bool SelectionRectangle::isSelectionToolClicked() {
 	// checks if the rectangle is clicked and not left yet i.e is dragged
-	return (sf::Mouse::isButtonPressed(sf::Mouse::Left)); 
-		
+	return (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Mouse::isButtonPressed(sf::Mouse::Left));
 }
 
 void SelectionRectangle::dynamicWidthHeightAdjustment(sf::Vector2i& mousepos) {
@@ -46,3 +46,4 @@ void SelectionRectangle::dynamicWidthHeightAdjustment(sf::Vector2i& mousepos) {
 	auto bounds = selectionTool.getGlobalBounds(); 
 	selectionTool.setSize(sf::Vector2f(mousepos.x - selectionTool.getPosition().x, mousepos.y - selectionTool.getPosition().y));
 }
+
