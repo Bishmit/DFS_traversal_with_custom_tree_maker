@@ -278,6 +278,12 @@ void Game::render() {
         circle->render(window);
     }
 
+    // logic to print the numbers associated with nodes
+    if (circles.size() > lastSize) {
+        lastSize = circles.size(); 
+        std::cout << lastSize << "\n"; 
+    }
+
     window.setView(window.getDefaultView());
     window.draw(buttonDfs); 
     window.draw(buttonBfs); 
@@ -300,7 +306,6 @@ void Game::handleKeyPress(sf::Event& event) {
 
 void Game::addNewCircle() {
         circles.emplace_back(std::make_unique<makeCircle>(8.f, newMousePosition.x, newMousePosition.y));
-
 }
 
 void Game::connectNodes(makeCircle* node1, makeCircle* node2) {
