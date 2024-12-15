@@ -1,9 +1,7 @@
 #include "../Include/SelectionRectangle.h"
 
-
 SelectionRectangle::SelectionRectangle()
 {
-
 	selectionTool.setFillColor(sf::Color::White); 
 	selectionTool.setPosition(sf::Vector2f(0.f, 0.f)); 
 	selectionTool.setSize(sf::Vector2f(20.f, 20.f)); 
@@ -32,16 +30,19 @@ void SelectionRectangle::render(sf::RenderWindow& window)
 	window.draw(selectionTool); 
 }
 
-void SelectionRectangle::mouseControl(sf::Vector2i& mousepos) {
+void SelectionRectangle::mouseControl(sf::Vector2i& mousepos) 
+{
 	selectionTool.setPosition(mousepos.x, mousepos.y); 
 }
 
-bool SelectionRectangle::isSelectionToolClicked() {
+bool SelectionRectangle::isSelectionToolClicked() 
+{
 	// checks if the rectangle is clicked and not left yet i.e is dragged
-	return (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Mouse::isButtonPressed(sf::Mouse::Left));
+	return (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl));
 }
 
-void SelectionRectangle::dynamicWidthHeightAdjustment(sf::Vector2i& mousepos) {
+void SelectionRectangle::dynamicWidthHeightAdjustment(sf::Vector2i& mousepos) 
+{
 	// change the width and height of the selectiontool in real time
 	auto bounds = selectionTool.getGlobalBounds(); 
 	selectionTool.setSize(sf::Vector2f(mousepos.x - selectionTool.getPosition().x, mousepos.y - selectionTool.getPosition().y));

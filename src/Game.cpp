@@ -1,8 +1,13 @@
 #include "../Include/Game.h"
 
 Game::Game()
-    : window(sf::VideoMode(1300, 775), "Graph Traversal",
-      sf::Style::Titlebar | sf::Style::Close), drawLine(false), snappingMode(false), selectedNode(nullptr) {
+    : window(sf::VideoMode(1300, 775), 
+      "Graph Traversal",
+      sf::Style::Titlebar | sf::Style::Close),
+      drawLine(false),
+      snappingMode(false),
+      selectedNode(nullptr) 
+ {
     window.setFramerateLimit(60);
     if (!font.loadFromFile("Assets/TimesNewRoman.ttf")) {
         std::cout << "Font not loaded\n";
@@ -13,7 +18,8 @@ Game::Game()
     createButton(1300 - 150, 160, buttonClearAll, textClearAll, "Clear All");
 }
 
-void Game::run() {
+void Game::run() 
+{
     while (window.isOpen()) {
         updateMousePosition(); 
         processEvents();
@@ -22,12 +28,14 @@ void Game::run() {
     }
 }
 
-void Game::updateMousePosition() {
+void Game::updateMousePosition() 
+{
     sf::Vector2i _mousePosition = sf::Mouse::getPosition(window);
     newMousePosition = sf::Vector2i(window.mapPixelToCoords(_mousePosition));
 }
 
-void Game::processEvents() {
+void Game::processEvents() 
+{
     sf::Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed)
@@ -154,7 +162,8 @@ void Game::processEvents() {
 }
 
 
-void Game::update() {
+void Game::update() 
+{
     st.update(newMousePosition); 
     //newMousePosition = sf::Mouse::getPosition(window);
     // Update all circles to handle dragging
@@ -176,7 +185,8 @@ void Game::update() {
     //coverNodeOnSelect(); 
 }
 
-void Game::processSnappingMode() {
+void Game::processSnappingMode() 
+{
     // First left-click to select the starting circle
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !selectedNode) {
         selectStartingCircle();
@@ -188,7 +198,8 @@ void Game::processSnappingMode() {
     }
 }
 
-void Game::selectStartingCircle() {
+void Game::selectStartingCircle() 
+{
     for (size_t i = 0; i < circles.size(); ++i) {
         if (circles[i]->getBounds().contains(static_cast<float>(newMousePosition.x), static_cast<float>(newMousePosition.y))) {
             selectedNode = circles[i].get();
@@ -198,7 +209,8 @@ void Game::selectStartingCircle() {
     }
 }
 
-void Game::selectNearestCircleAndConnect() {
+void Game::selectNearestCircleAndConnect() 
+{
     for (size_t i = 0; i < circles.size(); ++i) {
         if (i != selectedCircleIndex) {
             auto& otherCircle = circles[i];
@@ -212,7 +224,8 @@ void Game::selectNearestCircleAndConnect() {
     }
 }
 
-void Game::render() {
+void Game::render() 
+{
     window.setView(view);
     window.clear();
 
@@ -222,7 +235,7 @@ void Game::render() {
         if (clock.getElapsedTime().asSeconds() >= colorUpdateInterval) {
             if (nodecoloring < circles.size()) {
                 if (circles[nodecoloring]->highlighted) {
-                    circles[nodecoloring]->setcolor(sf::Color(0, 255, 0, 250));
+                    circles[nodecoloring]->setcolor(sf::Color::Cyan);
                 }
                 ++nodecoloring; 
             }
@@ -234,7 +247,7 @@ void Game::render() {
     if (selectDFS && isbuttonChecked) {
         if (clock.getElapsedTime().asSeconds() >= colorUpdateInterval) {
             if (nodecoloring < visitedNodesDFS.size()) {
-                visitedNodesDFS[nodecoloring]->setcolor(sf::Color(0, 255, 0, 250));
+                visitedNodesDFS[nodecoloring]->setcolor(sf::Color::Cyan);
                 ++nodecoloring;
             }
             clock.restart();
@@ -298,24 +311,28 @@ void Game::render() {
     window.display();
 }
 
-void Game::handleKeyPress(sf::Event& event) {
+void Game::handleKeyPress(sf::Event& event) 
+{
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::C) {
         addNewCircle();
     }
 }
 
-void Game::addNewCircle() {
-        circles.emplace_back(std::make_unique<makeCircle>(8.f, newMousePosition.x, newMousePosition.y));
+void Game::addNewCircle() 
+{
+    circles.emplace_back(std::make_unique<makeCircle>(8.f, newMousePosition.x, newMousePosition.y, font, lastSize + 1));
 }
 
-void Game::connectNodes(makeCircle* node1, makeCircle* node2) {
+void Game::connectNodes(makeCircle* node1, makeCircle* node2) 
+{
     if (node1 && node2 && node1 != node2) {
         node1->addConnection(node2);  // Add connection in both directions
         node2->addConnection(node1);
     }
 }
 
-void Game::makeConnections(sf::RenderWindow& window, sf::Clock& animationClock) {
+void Game::makeConnections(sf::RenderWindow& window, sf::Clock& animationClock) 
+{
     constexpr float RECTANGLE_THICKNESS = 2.0f;
     constexpr float DEG_TO_RAD = 180.f / 3.14159f;
 
@@ -360,12 +377,14 @@ void Game::makeConnections(sf::RenderWindow& window, sf::Clock& animationClock) 
 
 
 // Helper function to check if two positions are close enough to snap
-bool Game::isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2) {
+bool Game::isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2) 
+{
     static constexpr float SNAP_THRESHOLD = 50.0f;
     return std::hypot(pos1.x - pos2.x, pos1.y - pos2.y) < SNAP_THRESHOLD;
 }
 
-void Game:: doDFS(makeCircle* startnode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNode) {
+void Game:: doDFS(makeCircle* startnode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNode) 
+{
     if (startnode == nullptr || parentNode == nullptr || stop ) {
         return;
     }
@@ -388,7 +407,8 @@ void Game:: doDFS(makeCircle* startnode, makeCircle* parentNode, std::vector<mak
    
 }
 
-void Game::doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNodes) {
+void Game::doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<makeCircle*>& visitedNodes) 
+{
     if (startNode == nullptr || stop) {
         return;
     }
@@ -422,7 +442,8 @@ void Game::doBFS(makeCircle* startNode, makeCircle* parentNode, std::vector<make
 }
 
 
-void Game::createButton(int x, int y, sf::RectangleShape& button, sf::Text& text, const std::string& title) {
+void Game::createButton(int x, int y, sf::RectangleShape& button, sf::Text& text, const std::string& title) 
+{
     button = sf::RectangleShape(sf::Vector2f(105, 30)); 
     button.setPosition(x, y); 
     button.setOutlineColor(sf::Color::White); 
@@ -436,7 +457,8 @@ void Game::createButton(int x, int y, sf::RectangleShape& button, sf::Text& text
     text.setPosition(button.getPosition().x + 5, button.getPosition().y + 5); 
 }
 
-void Game::clearTraversal() {
+void Game::clearTraversal() 
+{
     visitedNodesDFS.clear(); 
     visitedNodesBFS.clear(); 
     for (auto& circle : circles) {
@@ -448,13 +470,15 @@ void Game::clearTraversal() {
     isbuttonChecked = false; 
 }
 
-void Game::clearGraph() {
+void Game::clearGraph() 
+{
     circles.clear();
     stop = false;   
     isbuttonChecked = false; 
 }
 
-void Game::coverNodeOnSelect() {
+void Game::coverNodeOnSelect() 
+{
     for (int i = 0; i < circles.size(); i++) {
        if(st.selectionTool.getGlobalBounds().contains(circles[i]->getPos().x, circles[i]->getPos().y))
         {
@@ -463,14 +487,15 @@ void Game::coverNodeOnSelect() {
     }
 }
 
-void Game::displacePosition() {
+void Game::displacePosition() 
+{
     static sf::Vector2f initialMousePosition;
     sf::Vector2f displacement;
     sf::Vector2f _newMousePosition = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
 
     static bool wasMiddleButtonPressed = false; // tracks the previous state of the middle button
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
         isDragging = true;
         initialMousePosition = _newMousePosition;
         coverNodeOnSelect();

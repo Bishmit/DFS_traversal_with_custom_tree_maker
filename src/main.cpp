@@ -1,7 +1,7 @@
 #include"../Include/Game.h"
  
-int main() {
-	
+int main() 
+{
 	Game game; 
 	game.run(); 
 }

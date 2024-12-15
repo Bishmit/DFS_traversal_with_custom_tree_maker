@@ -62,7 +62,7 @@ private:
     void makeConnections(sf::RenderWindow& window, sf::Clock& animationClock);
 
     // some other variable
-    size_t lastSize = 0; 
+    size_t lastSize = 0;
     bool stop = false; 
     bool isScrolled = false; 
     bool AdjustViewCoordinates = false; 
