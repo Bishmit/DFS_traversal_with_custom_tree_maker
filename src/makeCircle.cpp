@@ -29,8 +29,7 @@ void makeCircle::update(sf::Vector2i& mousePos, bool mousePressed, int& selected
     }
   
 
-void makeCircle::changeDisplacement(sf::Vector2f displacement, sf::Vector2f mousepos) { 
-   // sf::Vector2f initialOffset = sf::Vector2f(mousepos.x, mousepos.y) - circle.getPosition();
+void makeCircle::changeDisplacement(sf::Vector2f displacement) { 
      circle.setPosition(circle.getPosition() + displacement);  
 }
 

@@ -173,7 +173,7 @@ void Game::update() {
     }
 
     makeConnections(window, clock);  // make connections between circles
-    coverNodeOnSelect(); 
+    //coverNodeOnSelect(); 
 }
 
 void Game::processSnappingMode() {
@@ -464,30 +464,50 @@ void Game::coverNodeOnSelect() {
 }
 
 void Game::displacePosition() {
-    static sf::Vector2f initialMousePosition; 
-    sf::Vector2f displacement; 
+    static sf::Vector2f initialMousePosition;
+    sf::Vector2f displacement;
     sf::Vector2f _newMousePosition = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
 
+    static bool wasMiddleButtonPressed = false; // tracks the previous state of the middle button
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        isDragging = true; 
-        initialMousePosition = _newMousePosition; 
+        isDragging = true;
+        initialMousePosition = _newMousePosition;
+        coverNodeOnSelect();
+    }
+
+    // Handle selection and displacement with Middle Mouse
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
+        if (!wasMiddleButtonPressed) {
+            // initialize the dragging state
+            isDragging = true;
+            moveSelection = true;
+            initialMousePosition = _newMousePosition;
+        }
+
+        wasMiddleButtonPressed = true;
+        displacement = _newMousePosition - initialMousePosition;
+        initialMousePosition = _newMousePosition;
+
         for (auto& node : circles) {
             if (node->isUnderSelection) {
-                node->setcolor(sf::Color::Yellow); 
-                moveSelection = true; 
-            }
-          }
-    }   
-    else if(sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
-        displacement = _newMousePosition - initialMousePosition ; 
-        initialMousePosition = _newMousePosition; 
-        for (auto& node : circles) {
-            if (node->isUnderSelection) {
-                node->changeDisplacement(displacement, _newMousePosition); 
+                node->changeDisplacement(displacement);
             }
         }
     }
+
+    // Handle Middle Mouse release
+    if (!sf::Mouse::isButtonPressed(sf::Mouse::Middle) && wasMiddleButtonPressed) {
+        wasMiddleButtonPressed = false; 
+        isDragging = false;             
+        moveSelection = false;         
+
+        for (auto& node : circles) {
+            node->isUnderSelection = false; 
+        }
+    }
 }
+
 
 
 

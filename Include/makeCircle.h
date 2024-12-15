@@ -13,7 +13,7 @@ public:
     sf::Clock clock;
     makeCircle(float radius, int x, int y);
     void update(sf::Vector2i &mousepos, bool mousepressed, int &selectedIndex, int currentIndex, bool isDragging);
-    void changeDisplacement(sf::Vector2f displacement, sf::Vector2f mousepos);
+    void changeDisplacement(sf::Vector2f displacement);
     void render(sf::RenderWindow& window);
     bool mouselockwithcircle = false; 
     bool outside = true; 
