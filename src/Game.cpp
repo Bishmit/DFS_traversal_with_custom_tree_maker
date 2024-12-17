@@ -490,7 +490,7 @@ void Game::displacePosition()
 {
     static sf::Vector2f initialMousePosition;
     sf::Vector2f displacement;
-    sf::Vector2f _newMousePosition = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
+    sf::Vector2f _newMousePosition = static_cast<sf::Vector2f>(newMousePosition);
 
     static bool wasMiddleButtonPressed = false; // tracks the previous state of the middle button
 
