@@ -12,7 +12,7 @@ public:
     sf::Time highlightStartTime = sf::Time::Zero;
     sf::Clock clock;
     makeCircle(float radius, int x, int y, sf::Font& font, int number);
-    void update(sf::Vector2i &mousepos, bool mousepressed, int &selectedIndex, int currentIndex, bool isDragging);
+    void update(sf::Vector2i &mousepos, bool mouseprssed, int &selectedIndex, int currentIndex, bool isDragging);
     void changeDisplacement(sf::Vector2f displacement);
     void render(sf::RenderWindow& window);
     bool mouselockwithcircle = false; 

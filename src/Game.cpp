@@ -165,10 +165,10 @@ void Game::processEvents()
 void Game::update() 
 {
     st.update(newMousePosition); 
-    //newMousePosition = sf::Mouse::getPosition(window);
+
     // Update all circles to handle dragging
     for (size_t i = 0; i < circles.size(); ++i) {
-        circles[i]->update(newMousePosition, sf::Mouse::isButtonPressed(sf::Mouse::Left), selectedCircleIndex, i, isDragging);
+        circles[i]->update(newMousePosition, sf::Mouse::isButtonPressed(sf::Mouse::Left), selectedCircleIndex, i, isDragging);    
     }
 
     // Toggle snapping mode with "S" key
@@ -181,8 +181,7 @@ void Game::update()
         processSnappingMode();
     }
 
-    makeConnections(window, clock);  // make connections between circles
-    //coverNodeOnSelect(); 
+    makeConnections(window, clock);  // make connections between circles 
 }
 
 void Game::processSnappingMode() 
@@ -269,7 +268,7 @@ void Game::render()
           clock.restart();
        }
     }*/
-    
+
     // Draw all rectangles in the window
     for (auto& rect: rectangles) {
         window.draw(rect);
@@ -281,7 +280,6 @@ void Game::render()
                 node->setcolor(sf::Color(255, 255, 255, 180));
             }
         }
-
     }
 
     displacePosition(); 
@@ -360,7 +358,7 @@ void Game::makeConnections(sf::RenderWindow& window, sf::Clock& animationClock)
                 // Set color based on highlighting
                
                 if (node->highlighted && connectedNode->highlighted) {
-                    //something = true; 
+                    something = true; 
                     rectangle.setFillColor(sf::Color(0, 255, 0, 240)); // Highlight color
                 }
                 else {
@@ -379,7 +377,7 @@ void Game::makeConnections(sf::RenderWindow& window, sf::Clock& animationClock)
 // Helper function to check if two positions are close enough to snap
 bool Game::isNear(const sf::Vector2f& pos1, const sf::Vector2f& pos2) 
 {
-    static constexpr float SNAP_THRESHOLD = 50.0f;
+    static constexpr float SNAP_THRESHOLD = 30.0f;
     return std::hypot(pos1.x - pos2.x, pos1.y - pos2.y) < SNAP_THRESHOLD;
 }
 
@@ -475,6 +473,7 @@ void Game::clearGraph()
     circles.clear();
     stop = false;   
     isbuttonChecked = false; 
+    lastSize = 0; 
 }
 
 void Game::coverNodeOnSelect() 

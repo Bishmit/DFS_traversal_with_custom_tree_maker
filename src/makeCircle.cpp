@@ -25,21 +25,25 @@ makeCircle::makeCircle(float radius, int x, int y, sf::Font& font, int number)
 
 void makeCircle::update(sf::Vector2i& mousePos, bool mousePressed, int& selectedIndex, int currentIndex, bool isDragging) 
 {
+    static bool locked = false;
+   
     // Check if the mouse was initially pressed inside the circle to start dragging
-        if (mousePressed) {
-            if (circle.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
-                selectedIndex = currentIndex; // Lock onto this circle
-            }
-        }
-
+    if (mousePressed && !locked && circle.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+        selectedIndex = currentIndex; // Lock onto this circle
+        locked = true;
+        isDragging = true;
+    }
+    
         // Release the circle when the mouse button is released
-        if (!mousePressed && selectedIndex == currentIndex) {
+        if (!mousePressed && locked) {
+            locked = false; 
+            isDragging = false; 
             selectedIndex = -1;
+            mousePressed = false; 
         }
 
         // Only move the circle if it’s the one currently selected
-
-        if (selectedIndex == currentIndex) {
+        if (selectedIndex == currentIndex && locked) { 
             circle.setPosition(static_cast<float>(mousePos.x) - circle.getRadius(), static_cast<float>(mousePos.y) - circle.getRadius());
             text.setPosition(
                 circle.getPosition().x + circle.getRadius() / 1.25,  

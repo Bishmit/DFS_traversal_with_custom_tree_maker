@@ -27,7 +27,7 @@ private:
     sf::Vector2i newMousePosition;
     makeCircle* selectedNode = nullptr;
     int selectedCircleIndex = -1;
-    float colorUpdateInterval = 0.5f;
+    float colorUpdateInterval = 0.7f;
     int newnodeColoring;
     int nodecoloring = 0; 
     bool isbuttonChecked = false; 
